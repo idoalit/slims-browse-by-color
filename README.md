@@ -1,5 +1,7 @@
 Browse by Color
 ============
+[![BZPOGa.md.jpg](https://iili.io/BZPOGa.md.jpg)](https://freeimage.host/i/BZPOGa)
+
 This is a plugin for browsing collection in SLiMS by the color of image cover.
 ### System Requirements
 - SLiMS >= 9.4.0
