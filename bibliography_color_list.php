@@ -32,7 +32,7 @@ $page = intval($_GET['page'] ?? 1);
 $offset = ($page - 1) * $limit;
 if ($color !== '') $criteria = " where bc.color_dominant LIKE '%".$color."%'";
 $query = DB::getInstance('mysqli')->query('select b.image, b.title, bc.color_dominant, bc.color_palette 
-        from biblio b left join biblio_custom bc on b.biblio_id = bc.biblio_id' . $criteria . ' limit '.$offset.', ' . $limit);
+        from biblio b left join biblio_custom bc on b.biblio_id = bc.biblio_id' . $criteria . ' order by b.last_update desc limit '.$offset.', ' . $limit);
 $query_count = DB::getInstance('mysqli')->query('select count(*) from biblio b 
     left join biblio_custom bc on b.biblio_id = bc.biblio_id ' . $criteria);
 $data_count = $query_count->fetch_row();

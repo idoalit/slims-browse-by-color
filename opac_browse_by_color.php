@@ -90,7 +90,7 @@ $filters = [
         <form action="index.php">
             <?php
             foreach ($_GET as $k => $g) {
-                if ($k !== 'keyword') {
+                if ($k !== 'keywords') {
                     echo '<input type="hidden" name="'.$k.'" value="'.$g.'" />';
                 }
             }
@@ -106,7 +106,7 @@ $filters = [
             <div class="d-flex flex-row justify-content-start align-items-center">
                 <div><a title="All"
                         class="text-decoration-none d-flex flex-row justify-content-center align-items-center"
-                        style="height: 20px; margin-right: 8px" href="index.php?p=browse_by_color">🎨</a></div>
+                        style="height: 20px; margin-right: 8px" href="<?= BiblioColour::self([], ['color']) ?>">🎨</a></div>
                 <?php
                 $color = \utility::filterData('color', 'get', true, true, true);
                 foreach ($filters as $key => $filter) {
