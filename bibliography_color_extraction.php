@@ -69,7 +69,7 @@ if (isset($_GET['action'])) {
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Show Bibliography List</h5>
+                        <h5 class="card-title">Show Bibliographic List</h5>
                         <p class="card-text">Show bibliography list with color pallet</p>
                         <a href="<?= BiblioColour::self(['action' => 'list']) ?>" class="btn btn-primary">
                             Show Me
@@ -97,7 +97,7 @@ if (isset($_GET['action'])) {
     fetch('https://api.github.com/repos/idoalit/slims-browse-by-color/releases/latest')
         .then(res => res.json())
         .then(res => {
-            if (res.tag_name !== '1.0.0') {
+            if (res.tag_name !== '1.1.0') {
                 $('#new_version').text(res.tag_name);
                 $('#alert-new-version').removeClass('hidden');
                 $('#alert-new-version a').attr('href', res.html_url)

@@ -60,7 +60,7 @@ $filters = [
 <div style="min-height: calc(100vh - 150px)">
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
-            <h1 class="display-4">📚 Bibliography List</h1>
+            <h1 class="display-4">📚 Bibliographic List</h1>
             <hr>
             <div class="d-flex flex-row justify-content-start align-items-center pt-4">
                 <div><a title="All"
@@ -91,7 +91,8 @@ $filters = [
                             <img src="<?= BiblioColour::image($data['image']) ?>" alt="cover" class="img-thumbnail">
                         </div>
                         <div class="flex-grow-1 pl-2 d-flex flex-column justify-content-between">
-                            <h4 style="font-size: 11px"><?= $data['title'] ?></h4>
+                            <h4 style="font-size: 11px"><?= substr($data['title'], 0, 90) ?>...</h4>
+                            <code><?= $data['color_dominant'] ?></code>
                             <div class="d-flex flex-row mt-2">
                                 <?php
                                 if (!is_null($data['color_palette'])) {

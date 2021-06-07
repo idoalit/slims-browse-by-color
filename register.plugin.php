@@ -3,7 +3,7 @@
  * Plugin Name: Browse by Color
  * Plugin URI: https://github.com/idoalit/slims-browse-by-color
  * Description: Group bibliography collection by color of image cover
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Waris Agung Widodo
  * Author URI: https://github.com/idoalit
  *
