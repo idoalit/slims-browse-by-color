@@ -97,7 +97,7 @@ if (isset($_GET['action'])) {
     fetch('https://api.github.com/repos/idoalit/slims-browse-by-color/releases/latest')
         .then(res => res.json())
         .then(res => {
-            if (res.tag_name !== '1.1.0') {
+            if (res.tag_name !== '1.2.0') {
                 $('#new_version').text(res.tag_name);
                 $('#alert-new-version').removeClass('hidden');
                 $('#alert-new-version a').attr('href', res.html_url)
