@@ -21,6 +21,7 @@
  */
 
 use Lib\BiblioColour;
+use Lib\BiblioList;
 use SLiMS\DB;
 
 // require result list template
@@ -28,33 +29,23 @@ require_once LIB . 'biblio_list_model.inc.php';
 require_once LIB . 'biblio_list.inc.php';
 require_once SB . $sysconf['template']['dir'] . '/' . $sysconf['template']['theme'] . '/biblio_list_template.php';
 require_once SB . $sysconf['template']['dir'] . '/' . $sysconf['template']['theme'] . '/custom_frontpage_record.inc.php';
+require_once SIMBIO.'simbio_UTILS/simbio_tokenizecql.inc.php';
 require_once SIMBIO . 'simbio_GUI/paging/simbio_paging.inc.php';
 
 $page_title = '🎨 Browse by Color';
-$color = utility::filterData('color', 'get', true, true, true);
+$biblio_list = new BiblioList(DB::getInstance('mysqli'), 10);
+
 $criteria = '';
-if ($color !== '') $criteria = " AND bc.color_dominant LIKE '%" . $color . "%'";
+$keywords = trim(strip_tags(urldecode(utility::filterData('keywords'))));
+if ($keywords && !preg_match('@[a-z0-9_.]+=[^=]+\s+@i', $keywords.' ')) {
+    $criteria = 'title='.$keywords.' OR author='.$keywords.' OR subject='.$keywords;
+    $biblio_list->setSQLcriteria($criteria);
+} else {
+    $biblio_list->setSQLcriteria($keywords);
+}
 
-$page = intval($_GET['page'] ?? 1);
-$offset = ($page - 1) * 10;
-
-$sql = <<<SQL
-SELECT biblio.biblio_id, biblio.title, biblio.image, biblio.isbn_issn, biblio.publish_year, 
-                           pbl.publisher_name AS `publisher`, pplc.place_name AS `publish_place`, biblio.labels, 
-                           biblio.input_date, biblio.edition, biblio.collation, biblio.series_title, biblio.call_number,
-                           bc.color_dominant
-FROM biblio LEFT JOIN mst_publisher AS pbl ON biblio.publisher_id=pbl.publisher_id 
-    LEFT JOIN mst_place AS pplc ON biblio.publish_place_id=pplc.place_id 
-    LEFT JOIN biblio_custom bc on biblio.biblio_id = bc.biblio_id
-WHERE opac_hide=0 {$criteria} ORDER BY biblio.last_update DESC LIMIT {$offset}, 10
-SQL;
-
-$sql_count = <<<SQL
-SELECT COUNT(*) FROM biblio b LEFT JOIN biblio_custom bc on b.biblio_id = bc.biblio_id WHERE opac_hide=0 {$criteria}
-SQL;
-
-$query = DB::getInstance('mysqli')->query($sql);
-$query_count = DB::getInstance('mysqli')->query($sql_count);
+$query = DB::getInstance('mysqli')->query($biblio_list->compileSQL());
+$query_count = DB::getInstance('mysqli')->query($biblio_list->compileSQLCount());
 $data_count = $query_count->fetch_row();
 $paging = '';
 if ($data_count[0] > 10) {
@@ -62,6 +53,11 @@ if ($data_count[0] > 10) {
     $paging .= simbio_paging::paging($data_count[0], 10, 5);
     $paging .= '</div>';
 }
+
+$keywords_info = '<span class="search-keyword-info" title="'.htmlentities($keywords).'">'.((strlen($keywords)>30)?substr($keywords, 0, 30).'...':$keywords).'</span>';
+$search_result_info = __('Found <strong>{biblio_list->num_rows}</strong> from your keywords').': <strong class="search-found-info-keywords">'.$keywords_info.'</strong>';
+// set result number info
+$search_result_info = str_replace('{biblio_list->num_rows}', $data_count[0], $search_result_info);
 
 $filters = [
     'white' => ['title' => 'White', 'color' => 'rgb(255, 255, 255)'],
@@ -91,12 +87,28 @@ $filters = [
         ?>
     </div>
     <div class="col-md-4 order-1 order-md-2">
-        <div class="jumbotron py-3">
+        <form action="index.php">
+            <?php
+            foreach ($_GET as $k => $g) {
+                if ($k !== 'keyword') {
+                    echo '<input type="hidden" name="'.$k.'" value="'.$g.'" />';
+                }
+            }
+            ?>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter keywords" name="keywords">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="jumbotron py-3 mb-3">
             <div class="d-flex flex-row justify-content-start align-items-center">
                 <div><a title="All"
                         class="text-decoration-none d-flex flex-row justify-content-center align-items-center"
                         style="height: 20px; margin-right: 8px" href="index.php?p=browse_by_color">🎨</a></div>
                 <?php
+                $color = \utility::filterData('color', 'get', true, true, true);
                 foreach ($filters as $key => $filter) {
                     $link = BiblioColour::self(['color' => $key]);
                     $check = $color === $key ? '✔' : '';
@@ -106,5 +118,12 @@ $filters = [
                 ?>
             </div>
         </div>
+        <div class="alert alert-info"><?= $search_result_info ?></div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('input[name="keywords"]').closest('.card-body').hide()
+        $('body > div.result-search.pb-5 > section.container.mt-8').addClass('pt-3')
+    })
+</script>
