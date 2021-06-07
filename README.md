@@ -17,4 +17,5 @@ This is a plugin for browsing collection in SLiMS by the color of image cover.
 - After plugin enabled, open menu Bibliography => Color Extraction
 - Select `Re-extract All Cover` section and `Do it`. 
   This action will extract all bibliography image cover.
+- Extract process will also be executed when the bibliography is successfully saved (insert or update)
 - After it done, open this link `http://<your slims domain>/index.php?p=browse_by_color` to begin browse collection by color. 
